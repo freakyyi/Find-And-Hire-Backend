@@ -8,7 +8,11 @@ const sJobsController = require('../controllers/sjobs.controller')
 // router.get('/',sJobsController.getAll)
 
 // routers when data is going directly
+
+// router.post('/getUniversities',sJobsController.getUniversities)
 router.post('/',sJobsController.postScrapeJobs)
+
+router.post('/scholarships',sJobsController.getScholarShips)
 
 module.exports = router;
 

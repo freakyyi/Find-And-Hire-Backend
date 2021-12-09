@@ -3,81 +3,84 @@ const axios = require("axios");
 
 // Scrapping indeed
 
-const getIndeedJobs = async (query, location) => {
-  let jobs = [];
+// const getIndeedJobs = async (query, location) => {
+//   let jobs = [];
 
-  const indeed_url = "https://pk.indeed.com/jobs?";
+//   const indeed_url = "https://pk.indeed.com/jobs?";
 
-  try {
-    const response = await axios.get(
-      indeed_url
-      .concat("q=".concat(query))
-      .concat("=&")
-      .concat("l=".concat(location))
-      .concat("&radius=0&sort=date")
-    );
+//   try {
+//     const response = await axios.get(
+//       indeed_url
+//       .concat("q=".concat(query))
+//       .concat("=&")
+//       .concat("l=".concat(location))
+//       .concat("&radius=0&sort=date")
+//     );
 
-    const $ = cheerio.load(response.data);
-    // looping through each job post
+//     const $ = cheerio.load(response.data);
+//     // looping through each job post
+//     $('.job_seen_beacon> ').each((i, el) => {
+//       const title = $(el).find("table.jobCard_mainContent > tbody > tr > td > div.heading4.color-text-primary.singleLineTitle.tapItem-gutter > h2 > span").text().trim();
+//       // console.log('title',title)
+//       const summary = $(el)
+//         .find("table.jobCardShelfContainer > tbody > tr.underShelfFooter > td > div.heading6.tapItem-gutter.result-footer > div > ul")
+//         .text()
+//         .replace(/\r?\n|\r/g, "")
+//         .trim();
+        
 
-    $('#job_8b83974ea14fa476 > div.slider_container > div > div.slider_item > div').each((i, el) => {
-      const title = $(el).find("#job_a8ef5560f0924c21 > div.slider_container > div > div.slider_item > div > table.jobCard_mainContent > tbody > tr > td > div.heading4.color-text-primary.singleLineTitle.tapItem-gutter > h2 > span").text().trim();
-      console.log('title',title)
-      const summary = $(el)
-        .find(".summary")
-        .text()
-        .replace(/\r?\n|\r/g, "")
-        .trim();
+//       const company_name = $(el).find("table.jobCard_mainContent > tbody > tr > td > div.heading6.company_location.tapItem-gutter > pre > span").text().trim();
 
-      const company_name = $(el).find(".company").text().trim();
+//       const link = $(el)
+//         .find("tapItem.fs-unmask.result.job_d101f492c7c72341.esultWithShelf.sponTapItem.desktop")
 
-      const link = $(el)
-        .find("h2")
-        .find("a")
-        .attr("href")
-        .replace(/\r?\n|\r/g, "")
-        .trim();
-      const job_url = "https://pk.indeed.com"
-        .concat(link)
-        .replace(/\r?\n|\r/g, "")
-        .trim();
+//         .attr("href")
+//         // .replace(/\r?\n|\r/g, "")
+//         // .trim();
+        
+//         console.log("link",link)
+//       const job_url = "https://pk.indeed.com"
+//         .concat(link)
+//         .replace(/\r?\n|\r/g, "")
+//         .trim();
 
-      const location = $(el).find(".location").text();
+//       // const location = $(el).find(".location").text();
 
-      const date = $(el).find(".date").text();
+//       // const date = $(el).find(".date").text();
 
-      let salary = $(el).find(".salaryText").text().trim();
+//       // let salary = $(el).find(".salaryText").text().trim();
 
-      if (salary == "") {
-        salary = "Not Specified";
-      }
+//       // if (salary == "") {
+//       //   salary = "Not Specified";
+//       // }
 
-      var job = {
-        jobTitle: title,
-        summary: summary,
-        company: company_name,
-        linkToJob: job_url,
-        location: location,
-        salary: salary,
-        date: date,
-      };
-      jobs.push(job);
-    });
-    return jobs;
-  } catch (error) {
-    console.log(error);
-  }
-};
+//       var job = {
+//         jobTitle: title,
+//         summary: summary,
+//         company: company_name,
+//         linkToJob: job_url,
+//         // location: location,
+//         // salary: salary,
+//         // date: date,
+//       };
+//       jobs.push(job);
+//     });
+//     return jobs;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 // sleep for expert error
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// function sleep(ms) {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
 
 // scrapping expertini.com
 
 const getExpertiniJobs = async (query, location) => {
   const globalData = [];
   const getResp = async (uri) => {
+
     try {
       const resp = await axios.get(uri);
       return resp;
@@ -169,6 +172,7 @@ const getExpertiniJobs = async (query, location) => {
       console.log("error finding jobs in expertini")
     }
   })("https://pk.expertini.com/jobs/jobs/?");
+  console.log("url now :",uri)
   return globalData;
 };
 
@@ -307,7 +311,8 @@ const getbaytJobs = async (query, location) => {
         .concat(query.replace(" ", "-"))
         .concat("-jobs-in-")
         .concat(location)
-        .concat("?filters%5Bjb_last_modification_date_interval%5D%5B%5D=2"), {
+        .concat("?filters%5Bjb_last_modification_date_interval%5D%5B%5D=2")
+        , {
           headers: {
             "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36",
           },
@@ -682,8 +687,8 @@ const getjoblumJobs = async (query, location) => {
 // };
 
 exports.gethireejobsgulfJobs = gethireejobsgulfJobs;
-// exports.getExpertiniJobs = getExpertiniJobs;
+exports.getExpertiniJobs = getExpertiniJobs;
 exports.getjoblumJobs = getjoblumJobs;
 exports.getbaytJob = getbaytJobs;
-exports.getIndeedJobs = getIndeedJobs;
+// exports.getIndeedJobs = getIndeedJobs;
 // exports.getRozeeJobs = getRozeeJobs;

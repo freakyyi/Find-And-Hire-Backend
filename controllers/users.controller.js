@@ -14,7 +14,7 @@ exports.getAll = async (req, res, next) => {
     const seeker = await Seeker.find().exec();
     const user = await User.find().exec()
     
-    res.json({userWithoutRole:user });
+    res.json({userWithoutRole:user , Seekers : seeker, Recruiter : recruiter});
     res.status(200);
   } catch (error) {
     res.send(error);
@@ -185,6 +185,38 @@ exports.deleteOne = async (req, res, next) => {
       res.send(`User with id: ${userId} not deleted`);
       return;
     }
+  } catch (error) {
+    res.send(error);
+  }
+};
+exports.getSeekerCount = async (req, res, next) => {
+  try {
+    const seeker = await Seeker.countDocuments()
+    
+    res.json({Total_Seekers : seeker});
+    res.status(200);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+exports.getRecruiterCount = async (req, res, next) => {
+  try {
+    const recruiter = await Recruiter.count()
+    
+    res.json({Total_Recruiter : recruiter});
+    res.status(200);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+exports.getUsersCount = async (req, res, next) => {
+  try {
+    const users = await User.count()
+    
+    res.json({Total_Users : users});
+    res.status(200);
   } catch (error) {
     res.send(error);
   }

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Job = require("../models/Job");
 const CV = require("../models/CV");
 const User = require("../models/User");
+const Seeker = require('../models/seeker')
 const Application = require("../models/application");
 
 exports.createApplication = async (req, res, next) => {
@@ -19,7 +20,7 @@ exports.createApplication = async (req, res, next) => {
     //getting seekerId
     const sId = req.user._id;
     // getting CV
-    const cv = await CV.findOne(req.seeker).exec();
+    const cv = await CV.findOne({seeker: req.user._id}).exec();
     // getting cvId
     const cvId = cv._id;
 
@@ -53,26 +54,33 @@ exports.createApplication = async (req, res, next) => {
 
 exports.getApplications = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id).exec();
-    if (user.role === "seeker") {
-      res.status(401).send("Unauthorized Access");
-      return;
+    // const user = await User.findById(req.user._id).exec();
+    // if (user.role === "seeker") {
+    //   res.status(401).send("Unauthorized Access");
+    //   return;
+    // }
+    const response = { payLoad: [] }
+    const ObjectID = mongoose.Types.ObjectId
+    var jobId = req.params.jobId
+    var query = {
+      'jobId': new ObjectID(jobId)
     }
-    // const job = await Application.find({jobId}).exec();
-    // console.log("Jaab" , job)
-
-    const findApplicationsForThatJob = await Application.find(
-      {
-        jobId: { $in: [
-          mongoose.Types.ObjectId(req.params.jobId) 
-        ] },
-      }
-    ).exec();
-    res.status(200);
-    res.send(findApplicationsForThatJob);
-  } catch (error) {
-    res.send(error);
-    return
+    var applications = await Application.find(query)
+    // console.log("querys",query)
+    for (let index = 0; index < applications.length; index++) {
+      var seekerId = applications[index]['seekerId']
+      var seeker = await User.findOne({_id: seekerId}).exec()
+      var cvId = applications[index]['cvId']
+      console.log("cviod",cvId)
+      var cv = await CV.findOne({_id: cvId}).exec()
+      var convertedApplicationJSON = JSON.parse(JSON.stringify(applications[index]))
+      response.payLoad.push({"Application": convertedApplicationJSON,"seeker":seeker,"cv":cv})
+    }
+    res.status(200)
+    res.send(response)
+  }
+  catch (error) {
+    next(error)
   }
 };
 
@@ -113,4 +121,58 @@ exports.fetchApplied = async (req, res, next) => {
       return
     }
  
+}
+
+
+exports.updateApplicationStatus = async (req, res, next) => { 
+  try{
+    // const user = await User.findById(req.user._id).exec();
+    // if (user.role !== "recruiter") {
+    //   res.status(401).send("Unauthorized Access");
+    //   return;
+    // }
+   if (!mongoose.Types.ObjectId.isValid(req.params.applicationId)) {
+      res.status(404).send("Invalid applicationId");
+      return
+    }
+    const response = { payLoad: {}, message: "" };
+    const applicationId = req.params.applicationId;
+
+
+    const application = await Application.findById(applicationId).exec();
+    if (!application) {
+      res.status(404);
+      res.send(`No application associated with id: ${applicationId}`);
+      return
+    }
+    // const application = await Application.findOneAndUpdate({_id: req.params.applicationId}, req.body, {new: true, runValidators: true});
+
+    for (const key in req.body) {
+      if (
+        application.schema.obj.hasOwnProperty(key) &&
+        key !== "id" &&
+        key !== "_id" &&
+        key !== "jobId" &&
+        key !== "seekerId" &&
+        key !== "recruiterId" &&
+        key !== "cvId" 
+      ) {
+        application[key] = req.body[key];
+      }
+    }
+    const updatedStatus = await application.save();
+    if (updatedStatus) {
+      response.message = "Status Updated";
+      response.payLoad = updatedStatus;
+    } else {
+      res.status(404);
+      res.send(`Application with id: ${applicationId} not updated`);
+    }
+    res.status(200);
+    res.send(response);
+  
+  }
+  catch(error){
+console.log(error)
+  }
 }
