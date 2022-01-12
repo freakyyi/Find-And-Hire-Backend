@@ -1,11 +1,11 @@
-const express = require('express')
-const router = express.Router()
-const auth = require('../middleware/verifyTokens')
-const searchController = require('../controllers/search.controller')
+const express = require("express");
+const router = express.Router();
+const auth = require("../middleware/verifyTokens");
+const searchController = require("../controllers/search.controller");
 
-router.get('/', auth, searchController.getAll)
-router.get('/jobs', auth, searchController.getJobs)
-router.get('/users', auth, searchController.getUsers)
+router.get("/", searchController.getAll);
+router.get("/jobs", auth, searchController.getJobs);
+router.get("/users", auth, searchController.getUsers);
 // router.post('/jobs', auth, searchController.getFilteredJobs)
 
-module.exports= router;
+module.exports = router;

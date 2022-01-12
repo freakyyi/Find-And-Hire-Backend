@@ -1,19 +1,13 @@
-const express= require('express');
+const express = require("express");
 const router = express.Router();
-const sJobsController = require('../controllers/sjobs.controller')
-
+const sJobsController = require("../controllers/sjobs.controller");
 
 // routers when our database is setup alredi
 // router.post('/postScrapeJobs',sJobsController.postScrapeJobs)
 // router.get('/',sJobsController.getAll)
 
 // routers when data is going directly
-
-// router.post('/getUniversities',sJobsController.getUniversities)
-router.post('/',sJobsController.postScrapeJobs)
-
-router.post('/scholarships',sJobsController.getScholarShips)
+router.post("/", sJobsController.postScrapeJobs);
+router.post("/scholarships", sJobsController.getScholarShips);
 
 module.exports = router;
-
-
