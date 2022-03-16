@@ -37,13 +37,13 @@ app.use(errorController.get404)
 
 if ( process.env.NODE_ENV == "production"){
 
-    app.use(express.static("client/build"));
+    app.use(express.static("Hire-And-Find-Backend/build"));
 
     const path = require("path");
 
     app.get("*", (req, res) => {
 
-        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.js'));
+        res.sendFile(path.resolve(__dirname, 'Hire-And-Find-Backend', 'build', 'index.js'));
 
     })
 
